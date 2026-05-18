@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Parallel Translator Ultra Lite</title>
+<title>Parallel Translator Fast</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Lora:wght@400;600&display=swap');
@@ -14,9 +14,8 @@
     --paper:#f7f3ee;
     --paper-mid:#ede7de;
     --accent:#8b4a2f;
-    --accent-light:#c47a5a;
     --rule:#c8b8a2;
-    --shadow:rgba(26,22,18,0.12);
+    --shadow:rgba(0,0,0,0.1);
 }
 
 *{
@@ -30,52 +29,55 @@ body{
     color:var(--ink);
     font-family:'Noto Serif JP',serif;
     line-height:1.7;
-    min-height:100vh;
 }
 
 header{
     position:sticky;
     top:0;
     z-index:100;
+
     background:var(--ink);
     color:white;
-    padding:14px 24px;
-    border-bottom:4px solid var(--accent);
+
+    padding:14px 22px;
 
     display:flex;
     justify-content:space-between;
     align-items:center;
-    flex-wrap:wrap;
     gap:12px;
+    flex-wrap:wrap;
+
+    border-bottom:4px solid var(--accent);
 }
 
 header h1{
-    font-family:'Lora',serif;
     font-size:1.1rem;
+    font-family:'Lora',serif;
 }
 
 .controls{
     display:flex;
-    align-items:center;
     gap:10px;
+    align-items:center;
     flex-wrap:wrap;
 }
 
-select,
-input{
+input,
+select{
     background:#2a2622;
-    border:1px solid var(--rule);
     color:white;
+    border:1px solid var(--rule);
+
     padding:8px 10px;
     border-radius:6px;
-    font-size:0.85rem;
+
     outline:none;
 }
 
 main{
-    max-width:1000px;
-    margin:30px auto;
-    padding:0 20px;
+    max-width:1100px;
+    margin:28px auto;
+    padding:0 18px;
 }
 
 .card{
@@ -83,47 +85,48 @@ main{
     border-radius:10px;
     padding:24px;
     margin-bottom:24px;
-    box-shadow:0 4px 16px var(--shadow);
+    box-shadow:0 4px 14px var(--shadow);
 }
 
 .label{
     display:block;
     margin-bottom:12px;
+
     color:var(--accent);
+
     font-size:0.75rem;
     font-weight:bold;
-    text-transform:uppercase;
     letter-spacing:1px;
+    text-transform:uppercase;
 }
 
 #sourceText{
     white-space:pre-wrap;
     border-left:4px solid var(--rule);
     padding-left:16px;
-    color:#444;
     min-height:60px;
     margin-bottom:20px;
+    color:#444;
 }
 
 button{
     background:var(--accent);
     color:white;
     border:none;
-    border-radius:6px;
+
     padding:10px 16px;
+    border-radius:6px;
+
     cursor:pointer;
-    font-size:0.85rem;
-    transition:0.2s;
 }
 
 button:hover{
-    opacity:0.9;
+    opacity:0.92;
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    table-layout:fixed;
 }
 
 th{
@@ -131,27 +134,29 @@ th{
     padding:12px;
     text-align:left;
     border-bottom:2px solid var(--rule);
-    font-size:0.85rem;
 }
 
 td{
     padding:18px;
     vertical-align:top;
     border-bottom:1px solid var(--rule);
+    white-space:pre-wrap;
     word-break:break-word;
 }
 
 .row-num{
-    color:var(--accent-light);
-    margin-right:10px;
+    color:#b37a5c;
     font-style:italic;
+    margin-right:8px;
     font-weight:bold;
 }
 
 #loadingWrap{
     display:none;
+
     position:fixed;
     inset:0;
+
     background:rgba(247,243,238,0.92);
 
     justify-content:center;
@@ -165,7 +170,7 @@ td{
     width:42px;
     height:42px;
 
-    border:4px solid var(--rule);
+    border:4px solid #ddd;
     border-top-color:var(--accent);
 
     border-radius:50%;
@@ -180,16 +185,15 @@ td{
 }
 
 .error-msg{
-    background:#fff5f5;
+    background:#fff3f3;
     color:#b22222;
     border:1px solid #ffcfcf;
+
     padding:14px;
     border-radius:8px;
-    font-size:0.9rem;
 }
 
 .status{
-    margin-top:12px;
     color:var(--accent);
     font-size:0.85rem;
 }
@@ -208,15 +212,15 @@ td{
         display:none;
     }
 
-    td{
-        border-bottom:none;
-        padding:12px 0;
-    }
-
     tr{
         border-bottom:1px solid var(--rule);
-        padding-bottom:16px;
         margin-bottom:16px;
+        padding-bottom:16px;
+    }
+
+    td{
+        border:none;
+        padding:10px 0;
     }
 }
 </style>
@@ -226,18 +230,18 @@ td{
 
 <header>
 
-    <h1>Parallel Translator Ultra Lite</h1>
+    <h1>Parallel Translator Fast</h1>
 
     <div class="controls">
 
         <select id="modelSelect">
 
-            <option value="gemini-2.5-flash-lite" selected>
-                Gemini 2.5 Flash Lite
+            <option value="gemini-2.0-flash-lite" selected>
+                Gemini 2.0 Flash Lite
             </option>
 
-            <option value="gemini-2.0-flash-lite">
-                Gemini 2.0 Flash Lite
+            <option value="gemini-2.5-flash-lite">
+                Gemini 2.5 Flash Lite
             </option>
 
         </select>
@@ -264,21 +268,32 @@ td{
 ※ テキストを選択してブックマークレットを起動してください。
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div
+            style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            flex-wrap:wrap;
+            "
+        >
 
             <button onclick="doTranslate()">
                 翻訳
             </button>
 
-            <div class="status" id="statusText"></div>
+            <div
+                class="status"
+                id="statusText"
+            ></div>
 
         </div>
 
     </div>
 
     <div
-        id="resultWrap"
         class="card"
+        id="resultWrap"
         style="display:none;"
     >
 
@@ -359,7 +374,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 
         setTimeout(()=>{
             doTranslate();
-        },400);
+        },200);
     }
 });
 
@@ -407,12 +422,7 @@ async function doTranslate(){
 
     loadingWrap.style.display = 'flex';
 
-    statusText.textContent = '';
-
-    const lines = text
-        .split('\n')
-        .map(v=>v.trim())
-        .filter(v=>v);
+    statusText.textContent = '翻訳中...';
 
     const isJapanese =
         /[\u3040-\u30ff\u4e00-\u9fff]/.test(text);
@@ -423,96 +433,82 @@ async function doTranslate(){
     const selectedModel =
         document.getElementById('modelSelect').value;
 
-    const results = [];
-
     try{
 
-        for(let i=0;i<lines.length;i++){
-
-            statusText.textContent =
-                `翻訳中 ${i+1} / ${lines.length}`;
-
-            const line = lines[i];
-
-            const prompt = `
+        const prompt = `
 Translate the following text to ${targetLang}.
 
 Output translation only.
 
 Do not explain.
-Do not add options.
 Do not add notes.
+Do not add options.
 Do not use markdown.
 
 Text:
-${line}
+${text}
 `;
 
-            const url =
+        const url =
 `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
 
-            const response = await fetch(url,{
+        const response = await fetch(url,{
 
-                method:'POST',
+            method:'POST',
 
-                headers:{
-                    'Content-Type':'application/json'
-                },
+            headers:{
+                'Content-Type':'application/json'
+            },
 
-                body:JSON.stringify({
+            body:JSON.stringify({
 
-                    contents:[
-                        {
-                            parts:[
-                                {
-                                    text:prompt
-                                }
-                            ]
-                        }
-                    ],
-
-                    generationConfig:{
-                        temperature:0,
-                        topP:0,
-                        maxOutputTokens:300
+                contents:[
+                    {
+                        parts:[
+                            {
+                                text:prompt
+                            }
+                        ]
                     }
-                })
-            });
+                ],
 
-            const data = await response.json();
+                generationConfig:{
+                    temperature:0,
+                    topP:0,
+                    maxOutputTokens:2048
+                }
+            })
+        });
 
-            if(!response.ok){
+        const data = await response.json();
 
-                throw new Error(
-                    data.error?.message ||
-                    'API Error'
-                );
-            }
+        if(!response.ok){
 
-            const translated =
-                data.candidates?.[0]
-                ?.content
-                ?.parts?.[0]
-                ?.text
-                ?.trim();
-
-            if(!translated){
-
-                throw new Error(
-                    '翻訳結果取得失敗'
-                );
-            }
-
-            results.push({
-
-                original:line,
-                translated:translated
-            });
-
-            await sleep(300);
+            throw new Error(
+                data.error?.message ||
+                'API Error'
+            );
         }
 
-        renderTable(results,isJapanese);
+        const translated =
+            data.candidates?.[0]
+            ?.content
+            ?.parts?.[0]
+            ?.text
+            ?.trim();
+
+        if(!translated){
+
+            throw new Error(
+                '翻訳結果取得失敗'
+            );
+        }
+
+        renderTable(
+            text,
+            translated,
+            isJapanese
+        );
 
         resultWrap.style.display = 'block';
 
@@ -520,8 +516,7 @@ ${line}
             behavior:'smooth'
         });
 
-        statusText.textContent =
-            `完了 (${results.length} lines)`;
+        statusText.textContent = '完了';
 
     }catch(e){
 
@@ -541,41 +536,39 @@ ${line}
     }
 }
 
-function renderTable(rows,isJapanese){
+function renderTable(original,translated,isJapanese){
 
-    let html = `
+    const html = `
 <table>
+
 <thead>
 <tr>
-<th>${isJapanese ? '日本語' : 'English'}</th>
-<th>${isJapanese ? 'English' : '日本語'}</th>
+<th>
+${isJapanese ? '日本語' : 'English'}
+</th>
+
+<th>
+${isJapanese ? 'English' : '日本語'}
+</th>
 </tr>
 </thead>
+
 <tbody>
-`;
 
-    rows.forEach((row,i)=>{
-
-        html += `
 <tr>
 
 <td>
-<span class="row-num">
-${i+1}
-</span>
-${escapeHtml(row.original)}
+${escapeHtml(original)}
 </td>
 
 <td>
-${escapeHtml(row.translated)}
+${escapeHtml(translated)}
 </td>
 
 </tr>
-`;
-    });
 
-    html += `
 </tbody>
+
 </table>
 `;
 
@@ -607,15 +600,6 @@ async function copyTable(){
 
         alert('コピー失敗');
     }
-}
-
-function sleep(ms){
-
-    return new Promise(resolve=>{
-
-        setTimeout(resolve,ms);
-
-    });
 }
 
 </script>
