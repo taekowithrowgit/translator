@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日英翻訳</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --ink: #1a1612;
+    --paper: #f7f3ee;
+    --paper-mid: #ede7de;
+    --accent: #8b4a2f;
+    --accent-light: #c47a5a;
+    --rule: #c8b8a2;
+    --shadow: rgba(26,22,18,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Serif JP', serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  header h1 {
+    font-family: 'Lora', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  header .lang-badge {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border: 1px solid var(--accent-light);
+    border-radius: 20px;
+    color: var(--accent-light);
+    font-family: 'Lora', serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .api-bar {
+    background: var(--paper-mid);
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .api-bar label {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .api-bar input {
+    flex: 1;
+    max-width: 420px;
+    padding: 7px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--paper);
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .api-bar input:focus { border-color: var(--accent); }
+
+  .api-bar button {
+    padding: 7px 20px;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Lora', serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .api-bar button:hover { background: var(--accent-light); }
+
+  .source-box {
+    margin: 28px 40px 0;
+    background: var(--paper-mid);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 18px 22px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: #555;
+    max-height: 140px;
+    overflow-y: auto;
+  }
+
+  .source-box strong {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .translate-btn-wrap {
+    margin: 18px 40px 0;
+  }
+
+  .translate-btn {
+    padding: 10px 32px;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Lora', serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .translate-btn:hover { background: #a05030; transform: translateY(-1px); }
+  .translate-btn:disabled { background: var(--rule); cursor: not-allowed; transform: none; }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(247,243,238,0.3);
+    border-top-color: var(--paper);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result-section {
+    margin: 28px 40px 40px;
+    flex: 1;
+  }
+
+  .result-section h2 {
+    font-family: 'Lora', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .result-section h2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 16px var(--shadow);
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  thead tr {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  thead th {
+    padding: 13px 22px;
+    font-family: 'Lora', serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  thead th:first-child {
+    border-right: 1px solid rgba(255,255,255,0.12);
+    width: 50%;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--rule);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--paper-mid); }
+
+  tbody td {
+    padding: 18px 22px;
+    vertical-align: top;
+    line-height: 1.9;
+    font-size: 0.92rem;
+  }
+
+  tbody td:first-child {
+    border-right: 1px solid var(--rule);
+    font-family: 'Noto Serif JP', serif;
+  }
+
+  tbody td:last-child {
+    font-family: 'Lora', serif;
+    color: #3a3028;
+  }
+
+  .row-num {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.68rem;
+    font-family: 'Lora', serif;
+    margin-right: 8px;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+
+  .error-msg {
+    background: #fff0f0;
+    border: 1px solid #f5c0c0;
+    border-radius: 6px;
+    padding: 16px 20px;
+    color: #a03030;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .placeholder {
+    text-align: center;
+    padding: 60px 20px;
+    color: #b0a090;
+    font-family: 'Lora', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>日英対訳</h1>
+  <span class="lang-badge">Bilingual Translator</span>
+</header>
+
+<div class="api-bar">
+  <label>GEMINI API KEY</label>
+  <input type="password" id="apiKey" placeholder="AIza..." />
+  <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.75rem;color:var(--accent);font-family:'Lora',serif;">キーを取得 ↗</a>
+  <button onclick="saveKey()">保存</button>
+</div>
+
+<div id="sourceWrap" class="source-box" style="display:none">
+  <strong>原文</strong>
+  <div id="sourceText"></div>
+</div>
+
+<div class="translate-btn-wrap" id="btnWrap" style="display:none">
+  <button class="translate-btn" id="translateBtn" onclick="doTranslate()">
+    <span class="spinner" id="spinner"></span>
+    翻訳する
+  </button>
+</div>
+
+<div class="result-section">
+  <h2>翻訳結果</h2>
+  <div id="result">
+    <div class="placeholder">テキストを選択してブックマークレットを実行してください</div>
+  </div>
+</div>
+
+<script>
+const GEMINI_MODEL = 'gemini-2.0-flash';
+
+// APIキー保存
+function saveKey() {
+  const key = document.getElementById('apiKey').value.trim();
+  if (key) {
+    localStorage.setItem('gemini_key', key);
+    alert('APIキーを保存しました');
+  }
+}
+
+// ページ読み込み時
+window.onload = () => {
+  const saved = localStorage.getItem('gemini_key');
+  if (saved) document.getElementById('apiKey').value = saved;
+
+  const params = new URLSearchParams(window.location.search);
+  const text = params.get('text');
+  if (text) {
+    document.getElementById('sourceText').textContent = text;
+    document.getElementById('sourceWrap').style.display = 'block';
+    document.getElementById('btnWrap').style.display = 'block';
+  }
+};
+
+async function doTranslate() {
+  const apiKey = document.getElementById('apiKey').value.trim()
+                 || localStorage.getItem('gemini_key');
+  if (!apiKey) { alert('APIキーを入力してください'); return; }
+
+  const text = document.getElementById('sourceText').textContent.trim();
+  if (!text) return;
+
+  const btn = document.getElementById('translateBtn');
+  const spinner = document.getElementById('spinner');
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  document.getElementById('result').innerHTML = '';
+
+  const isJapanese = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(text);
+  const direction = isJapanese ? '日本語のテキストを英語に翻訳' : '英語のテキストを日本語に翻訳';
+
+  const prompt = `以下のテキストを文章のかたまり（段落・意味的なまとまり）ごとに分割して翻訳してください。
+${direction}してください。
+
+出力は必ずJSON形式のみで返してください。マークダウンのコードブロック（\`\`\`）は絶対に使わないでください。
+{
+  "direction": "${isJapanese ? 'ja_to_en' : 'en_to_ja'}",
+  "segments": [
+    {
+      "ja": "日本語テキスト",
+      "en": "English text"
+    }
+  ]
+}
+
+原文:
+${text}`;
+
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.1 }
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || res.statusText);
+
+    const raw = data.candidates[0].content.parts[0].text
+                  .replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(raw);
+    renderTable(parsed);
+
+  } catch (e) {
+    document.getElementById('result').innerHTML =
+      `<div class="error-msg">⚠️ エラー: ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+  }
+}
+
+function renderTable(data) {
+  const segments = data.segments;
+  const isJaToEn = data.direction === 'ja_to_en';
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>🇯🇵 日本語</th>
+        <th>🇺🇸 English</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  segments.forEach((seg, i) => {
+    html += `<tr>
+      <td><span class="row-num">${i+1}</span>${escHtml(seg.ja)}</td>
+      <td>${escHtml(seg.en)}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('result').innerHTML = html;
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+</script>
+
+</body>
+</html>
